@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>ZEGO News 文档生成器</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.1/docx.umd.min.js"></script>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      margin: 40px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      font-size: 16px;
+      padding: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>ZEGO News 文本输入</h2>
+  <textarea id="inputText" placeholder="请输入新闻摘要..."></textarea>
+  <br>
+  <button onclick="generateDoc()">生成 Word 文档</button>
+
+  <script>
+    async function generateDoc() {
+      const { Document, Packer, Paragraph, TextRun } = window.docx;
+      const inputText = document.getElementById("inputText").value.trim();
+      if (!inputText) {
+        alert("请输入文本内容！");
+        return;
+      }
+
+      const today = new Date();
+      const formattedDate = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+
+      const doc = new Document({
+        sections: [{
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: formattedDate, bold: true })],
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "【ZEGO即构News】", bold: true })],
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [new TextRun(inputText)],
+              spacing: { after: 400 }, // 空两行
+            }),
+            new Paragraph(""),
+            new Paragraph(""),
+            new Paragraph("【即构科技ZEGO——高质量实时音视频云服务提供商】"),
+            new Paragraph("✔视频号：即构科技ZEGO"),
+            new Paragraph("✔公众号：即构科技ZEGO"),
+            new Paragraph("“社群每日推送涵盖AI前沿、音视频、即时通讯、互联网等相关行业资讯”"),
+            new Paragraph("即刻加入即构社群，请加小极狗微信：techzego"),
+            new Paragraph("——————————————————————————————"),
+          ],
+        }],
+      });
+
+      const blob = await Packer.toBlob(doc);
+      const fileName = `ZEGO_News_${today.getFullYear()}${today.getMonth() + 1}${today.getDate()}.docx`;
+
+      // 触发下载
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+    }
+  </script>
+</body>
+</html>
